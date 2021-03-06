@@ -12,15 +12,18 @@
 
 <body>
     <main>
-        <div class="wrapper">
-            <canvas class="canvas" id="js-canvas"></canvas>
+        <div class="game">
+            <div class="canvas-wrapper">
+                <canvas class="canvas-background" id="c_background" width="1200" height="800"></canvas>
+                <canvas class="canvas-gameObjects" id="c_gameObjects" width="1200" height="800">
+                    Canvas is not supported in your browser
+                </canvas>
+            </div>
             <div class="interface"></div>
         </div>
     </main>
 
-
-
-    <script src="./settings.js"></script>
+    <script src="./utils.js"></script>
     <script src="./gameObjects/Snake.js"></script>
     <script src="./gameObjects/Apple.js"></script>
     <script src="./main.js"></script>

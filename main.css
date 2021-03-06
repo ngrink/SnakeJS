@@ -16,7 +16,7 @@ body {
   color: #fff;
 }
 
-.wrapper {
+.game {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -26,16 +26,21 @@ body {
   height: 100vh;
 }
 
-.canvas {
+.canvas-wrapper {
   position: relative;
   width: 1200px;
   height: 800px;
-  background-color: #0b0b0b;
   box-shadow: 0px 0px 25px 10px rgba(0, 0, 0, 0.2);
 }
 
-.square {
-  width: 16px;
-  height: 16px;
-  background-color: lime;
+.canvas-background,
+.canvas-gameObjects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.canvas-background {
+  background-color: #0b0b0b;
 }
