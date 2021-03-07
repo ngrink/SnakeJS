@@ -3,22 +3,25 @@ class Apples {
     this.typesOfApple = {
       1: {
         name: "basic",
-        value: 1,
+        score: 1,
+        grow: 1,
         color: "#ff3c36",
-        dropChance: 0.8,
+        dropChance: 0.7,
       },
       2: {
         name: "medium",
-        value: 3,
+        grow: 3,
+        score: 10,
         color: "#ff6836",
-        dropChance: 0.19,
+        dropChance: 0.25,
       },
       3: {
         name: "gold",
-        value: 10,
+        grow: 10,
+        score: 100,
         color: "gold",
-        dropChance: 0.01,
-        duration: 10,
+        dropChance: 0.05,
+        duration: 7,
       },
     };
     this.list = [];
@@ -58,7 +61,18 @@ class Apples {
     Object.assign(newapple, this.typesOfApple[min]);
 
     if (this.isFree(newapple)) {
-      this.list.push(newapple);
+      if (newapple.duration && !gameStarted) {
+        this.newApple();
+        return
+      }
+      
+      let len = this.list.push(newapple);
+
+      if (newapple.duration) {
+        setTimeout(function() {
+          apples.list.splice(len-1, 1);
+        }, newapple.duration * 1000)
+      }
     } else {
       this.newApple();
     }

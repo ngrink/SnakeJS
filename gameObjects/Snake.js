@@ -10,11 +10,11 @@ class Snake {
     this.length = 1;
     this.tail = [];
     this.eatenTail = [];
-    this.peak = null;
 
     this.ctick = 0; // current tick
     this.ticksToUpdate = 3;
     this.changeDirCooldown = false;
+    this.shiftEatenTiming = 20;
 
     this.color = "#83ff0f";
     this.score = 0;
@@ -27,25 +27,27 @@ class Snake {
 
       let lenDiff = this.tail.length - (this.length - 1);
       if (lenDiff > 0) {
-        this.peak = this.tail.shift();
+        this.tail.shift();
       }
 
       this.headPos.x += this.direction.x * this.speed.x;
       this.headPos.y += this.direction.y * this.speed.y;
-      this.ctick = 0;
       this.changeDirCooldown = false;
+      this.ctick = 0;
+      
     }
   }
 
   draw() {
-    if (this.peak) {
-      ctxObj.clearRect(this.peak.x, this.peak.y, cellSize, cellSize);
-      this.peak = null;
+    // eaten tail
+    ctxObj.fillStyle = "red";
+    for (let i = 0; i < this.eatenTail.length; i++) {
+      ctxObj.fillRect(this.eatenTail[i].x, this.eatenTail[i].y, this.size, this.size);
     }
 
+    // snake
     ctxObj.fillStyle = this.color;
     ctxObj.fillRect(this.headPos.x, this.headPos.y, this.size, this.size);
-
     for (let i = 0; i < this.tail.length; i++) {
       ctxObj.fillRect(this.tail[i].x, this.tail[i].y, this.size, this.size);
     }
@@ -76,8 +78,8 @@ class Snake {
     let A = apples.list;
     for (let i = 0; i < A.length; i++) {
       if (A[i].x == this.headPos.x && A[i].y == this.headPos.y) {
-        this.length += 1;
-        this.score += A[i].value;
+        this.length += A[i].grow;
+        this.score += A[i].score;
 
         A = A.splice(i, 1);
         apples.newApple();
@@ -85,5 +87,27 @@ class Snake {
     }
   }
 
-  checkSelfCollision() {}
+  checkSelfCollision() {
+    for (let i = 0; i < this.tail.length; i++) {
+      if (this.headPos.x == this.tail[i].x &&
+          this.headPos.y == this.tail[i].y) {
+        this.eatenTail = this.tail.splice(0, i+1);
+        this.length -= i+1;
+        
+        setTimeout(this.shiftEaten.bind(this), this.shiftEatenTiming);
+      }
+    }
+  }
+
+  shiftEaten() {
+    if (this.eatenTail.length == 0) {
+      this.shiftEatenTiming = 15; 
+      return;
+    }
+    if (this.shiftEatenTiming > 1) {
+      this.shiftEatenTiming -= 0.5;
+    }
+    this.eatenTail.shift()
+    setTimeout(this.shiftEaten.bind(this), this.shiftEatenTiming);
+  }
 }

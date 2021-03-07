@@ -1,11 +1,15 @@
 // ------------------------------------------------------
 // canvas for background
-let cnvBg = document.getElementById("c_background");
-let ctxBg = cnvBg.getContext("2d");
+const cnvBg = document.getElementById("c_background");
+const ctxBg = cnvBg.getContext("2d");
 // ------------------------------------------------------
 // canvas with game objects
-let cnvObj = document.getElementById("c_gameObjects");
-let ctxObj = cnvObj.getContext("2d");
+const cnvObj = document.getElementById("c_gameObjects");
+const ctxObj = cnvObj.getContext("2d");
+// ------------------------------------------------------
+// HUD
+const hud = document.getElementById('hud');
+const elemsHUD = {};
 // ------------------------------------------------------
 // settings
 let cw = 1200;
@@ -13,6 +17,8 @@ let ch = 800;
 let cellSize = 16;
 let c_columns = cw / cellSize;
 let c_rows = ch / cellSize;
+let gameStarted = false;
+let pause = false;
 // ------------------------------------------------------
 // global objects
 let snake;
@@ -32,17 +38,24 @@ function init() {
   drawMap();
   createObjects();
   drawObjects();
+  initHUD();
 }
 
 // GAME LOOP
 // ----------------------------------------//
 function mainLoop() {
+  if (pause) {
+    setTimeout(mainLoop, 1000); 
+    return; 
+  };
+
   snake.move();
   snake.checkBorders();
   snake.checkEating();
   snake.checkSelfCollision();
-  snake.draw();
-  apples.drawApples();
+  updateHUD();
+  clearCanvas();
+  drawObjects();
   requestAnimationFrame(mainLoop);
 }
 
@@ -63,6 +76,9 @@ function keyPressed(evt) {
     case "g":
       snake.length += 10;
       break;
+    case "p":
+      pause = !pause;
+      break;
   }
 }
 
@@ -71,6 +87,7 @@ function mousePressed(evt) {}
 function startGameLoop(evt) {
   if ([37, 38, 39, 40].includes(evt.keyCode)) {
     removeEventListener("keydown", startGameLoop);
+    gameStarted = true;
     mainLoop();
   }
 }
@@ -98,4 +115,18 @@ function createObjects() {
 function drawObjects() {
   snake.draw();
   apples.drawApples();
+}
+
+function clearCanvas() {
+  ctxObj.clearRect(0, 0, cw, ch);
+}
+
+function initHUD() {
+  elemsHUD.score = hud.getElementsByClassName('score-num')[0];
+  elemsHUD.length = hud.getElementsByClassName('length-num')[0];
+}
+
+function updateHUD() {
+  elemsHUD.score.textContent = snake.score;
+  elemsHUD.length.textContent = snake.length;
 }
