@@ -15,14 +15,14 @@ class Snake {
     this.ticksToUpdate = 3;
     this.changeDirCooldown = false;
     this.shiftEatenTiming = 20;
+    this.collisionsCount = 0;
 
     this.color = "#83ff0f";
     this.score = 0;
   }
 
   move() {
-    this.ctick++;
-    if (this.ctick == this.ticksToUpdate) {
+    if (++this.ctick == this.ticksToUpdate) {
       this.tail.push({ x: this.headPos.x, y: this.headPos.y });
 
       let lenDiff = this.tail.length - (this.length - 1);
@@ -34,7 +34,6 @@ class Snake {
       this.headPos.y += this.direction.y * this.speed.y;
       this.changeDirCooldown = false;
       this.ctick = 0;
-      
     }
   }
 
@@ -42,7 +41,12 @@ class Snake {
     // eaten tail
     ctxObj.fillStyle = "red";
     for (let i = 0; i < this.eatenTail.length; i++) {
-      ctxObj.fillRect(this.eatenTail[i].x, this.eatenTail[i].y, this.size, this.size);
+      ctxObj.fillRect(
+        this.eatenTail[i].x,
+        this.eatenTail[i].y,
+        this.size,
+        this.size
+      );
     }
 
     // snake
@@ -81,19 +85,26 @@ class Snake {
         this.length += A[i].grow;
         this.score += A[i].score;
 
-        A = A.splice(i, 1);
-        apples.newApple();
+        if (A[i].name != "big" || A[i].center) {
+          A = A.splice(i, 1);
+          apples.newApple();
+        } else {
+          A = A.splice(i, 1);
+        }
       }
     }
   }
 
   checkSelfCollision() {
     for (let i = 0; i < this.tail.length; i++) {
-      if (this.headPos.x == this.tail[i].x &&
-          this.headPos.y == this.tail[i].y) {
-        this.eatenTail = this.tail.splice(0, i+1);
-        this.length -= i+1;
-        
+      if (
+        this.headPos.x == this.tail[i].x &&
+        this.headPos.y == this.tail[i].y
+      ) {
+        this.eatenTail = this.tail.splice(0, i + 1);
+        this.length -= i + 1;
+        this.collisionsCount += 1;
+
         setTimeout(this.shiftEaten.bind(this), this.shiftEatenTiming);
       }
     }
@@ -101,13 +112,13 @@ class Snake {
 
   shiftEaten() {
     if (this.eatenTail.length == 0) {
-      this.shiftEatenTiming = 15; 
+      this.shiftEatenTiming = 15;
       return;
     }
     if (this.shiftEatenTiming > 1) {
       this.shiftEatenTiming -= 0.5;
     }
-    this.eatenTail.shift()
+    this.eatenTail.shift();
     setTimeout(this.shiftEaten.bind(this), this.shiftEatenTiming);
   }
 }

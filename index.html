@@ -15,21 +15,25 @@
         <div class="game">
             <div class="canvas-wrapper">
                 <canvas class="canvas-background" id="c_background" width="1200" height="800"></canvas>
+                <canvas class="canvas-overlay" id="c_overlay" width="1200" height="800"></canvas>
                 <canvas class="canvas-gameObjects" id="c_gameObjects" width="1200" height="800">
                     Canvas is not supported in your browser
                 </canvas>
             </div>
             <ul id="hud">
-                <li class="title">
-                    SnakeJS
-                </li>
-                <li class="score">
-                    <span class="score-num">0</span>
-                </li>
+                <li class="title">SnakeJS</li>
+                <li class="score"><span class="score-num">0</span></li>
+                <ul class="pos">
+                    <li>x: <span class="xpos-num"></span></li>
+                    <li>y: <span class="ypos-num"></span></li>
+                </ul>
                 <li class="length">
-                    length: <span class="length-num">1</span>
+                    length: <span class="length-num"></span>
                 </li>
-            </div>
+                <li class="collisions">
+                    collisions: <span class="collisions-num"></span>
+                </li>
+            </ul>
         </div>
     </main>
 

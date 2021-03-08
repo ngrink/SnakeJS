@@ -3,25 +3,29 @@ class Apples {
     this.typesOfApple = {
       1: {
         name: "basic",
-        score: 1,
         grow: 1,
+        score: 5,
         color: "#ff3c36",
-        dropChance: 0.7,
+        dropChance: 0.65,
       },
       2: {
         name: "medium",
         grow: 3,
-        score: 10,
+        score: 15,
         color: "#ff6836",
         dropChance: 0.25,
       },
       3: {
+        name: "big",
+        dropChance: 0.06,
+      },
+      4: {
         name: "gold",
         grow: 10,
         score: 100,
         color: "gold",
-        dropChance: 0.05,
-        duration: 7,
+        dropChance: 0.04,
+        duration: 3,
       },
     };
     this.list = [];
@@ -54,59 +58,119 @@ class Apples {
       }
     }
 
-    let newapple = {
-      x: getRandomInt(0, c_columns) * cellSize,
-      y: getRandomInt(0, c_rows) * cellSize,
-    };
+    let newapple = {};
     Object.assign(newapple, this.typesOfApple[min]);
+    if (newapple.name == "big") {
+      this.newBigApple();
+      return;
+    }
+    newapple.x = getRandomInt(0, c_columns) * cellSize;
+    newapple.y = getRandomInt(0, c_rows) * cellSize;
 
-    if (this.isFree(newapple)) {
-      if (newapple.duration && !gameStarted) {
-        this.newApple();
-        return
-      }
-      
-      let len = this.list.push(newapple);
-
-      if (newapple.duration) {
-        setTimeout(function() {
-          apples.list.splice(len-1, 1);
-        }, newapple.duration * 1000)
-      }
-    } else {
+    if (!this.isPlaceFree(newapple.x, newapple.y)) {
       this.newApple();
+      return;
+    }
+    this.list.push(newapple);
+  }
+
+  newBigApple() {
+    // center point
+    let cx = getRandomInt(0, c_columns) * cellSize;
+    let cy = getRandomInt(0, c_rows) * cellSize;
+    let coords = this.getCoodsOfArea(cx, cy, 2);
+
+    if (this.isAreaFree(coords)) {
+      coords = coords.map((item) => ({
+        ...item,
+        name: "big",
+        grow: 1,
+        score: 5,
+        color: "#ff3c36",
+      }));
+      let ind_center = (coords.length - 1) / 2;
+      coords[ind_center]["center"] = true;
+
+      this.list = this.list.concat(coords);
+    } else {
+      this.newBigApple();
+      return;
     }
   }
 
-  isFree(apple) {
+  getCoodsOfArea(x, y, r) {
+    let D = 1 + 2 * r; // number of cells by diameter
+    let startPointX = x - r * cellSize;
+    let startPointY = y - r * cellSize;
+    let coords = [];
+
+    for (let row = 0; row < D; row++) {
+      for (let col = 0; col < D; col++) {
+        coords.push({
+          x: startPointX + cellSize * col,
+          y: startPointY + cellSize * row,
+        });
+      }
+    }
+
+    return coords;
+  }
+
+  isAreaFree(coords) {
+    coords.forEach(
+      function (item, i, coords) {
+        if (!this.isPlaceFree(item.x, item.y)) {
+          return false;
+        }
+      }.bind(this)
+    );
+
+    return true;
+  }
+
+  isPlaceFree(x, y) {
     // not near borders
-    if (
-      apple.x == 0 ||
-      apple.y == 0 ||
-      apple.x == cw - cellSize ||
-      apple.y == ch - cellSize
-    ) {
+    if (x == 0 || y == 0 || x == cw - cellSize || y == ch - cellSize) {
       return false;
     }
 
     // not the same place as another apple
     for (let i = 0; i < this.list.length; i++) {
-      if (apple.x == this.list[i].x && apple.y == this.list[i].y) {
+      if (x == this.list[i].x && y == this.list[i].y) {
         return false;
       }
     }
 
     // not the same place as snake
-    if (apple.x == snake.headPos.x && apple.y == snake.headPos.y) {
+    if (x == snake.headPos.x && y == snake.headPos.y) {
       return false;
     }
     for (let i = 0; i < snake.tail.length; i++) {
-      if (apple.x == snake.tail[i].x && apple.y == snake.tail[i].y) {
+      if (x == snake.tail[i].x && y == snake.tail[i].y) {
         return false;
       }
     }
 
     return true;
+  }
+
+  checkDuration() {
+    setInterval(function () {
+      if (!gameStarted) {
+        return;
+      }
+      let A = apples.list;
+      for (let i = 0; i < A.length; i++) {
+        if (A[i].hasOwnProperty("duration")) {
+          if (A[i].duration == 0) {
+            A.splice(i, 1);
+            apples.newApple();
+          } else {
+            A[i].duration -= 1;
+          }
+        }
+      }
+    }, 1000);
   }
 
   drawApples() {
