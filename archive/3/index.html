@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnakeJS</title>
+
+    <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+    <main>
+        <div class="game">
+            <div class="canvas-wrapper">
+                <canvas class="canvas-background" id="c_background" width="1200" height="800"></canvas>
+                <canvas class="canvas-gameObjects" id="c_gameObjects" width="1200" height="800">
+                    Canvas is not supported in your browser
+                </canvas>
+            </div>
+            <ul id="hud">
+                <li class="title">
+                    SnakeJS
+                </li>
+                <li class="score">
+                    <span class="score-num">0</span>
+                </li>
+                <li class="length">
+                    length: <span class="length-num">1</span>
+                </li>
+            </div>
+        </div>
+    </main>
+
+    <script src="./utils.js"></script>
+    <script src="./gameObjects/Snake.js"></script>
+    <script src="./gameObjects/Apple.js"></script>
+    <script src="./main.js"></script>
+</body>
+
+</html>
