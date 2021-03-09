@@ -177,7 +177,7 @@ class Apples {
     let A = this.list;
     for (let i = 0; i < A.length; i++) {
       ctxObj.fillStyle = A[i].color;
-      ctxObj.fillRect(A[i].x, A[i].y, cellSize, cellSize);
+      ctxObj.fillRect(A[i].x + 1, A[i].y + 1, cellSize - 1, cellSize - 1);
     }
   }
 }

@@ -16,6 +16,14 @@ body {
   color: #fff;
 }
 
+ul {
+  margin-block-start: 0;
+  margin-block-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: 0;
+  padding-inline-start: 0;
+}
+
 .game {
   display: flex;
   flex-direction: row;
@@ -48,10 +56,6 @@ body {
 }
 
 .canvas-overlay {
-  /* background: #bf638e;
-  background: -webkit-linear-gradient(top left, #bf638e, #e0931f);
-  background: -moz-linear-gradient(top left, #bf638e, #e0931f);
-  background: linear-gradient(to bottom right, #bf638e, #e0931f); */
   background: #3f145a;
   background: -webkit-linear-gradient(top left, #3f145a, #2a5ff6);
   background: -moz-linear-gradient(top left, #3f145a, #2a5ff6);

@@ -74,9 +74,11 @@ function keyPressed(evt) {
       snake.changeDir(1, 0);
       break;
     case "g":
+    case "п":
       snake.length += 10;
       break;
     case "p":
+    case "з":
       pause = !pause;
       if (pause == false) mainLoop();
       break;
