@@ -21,8 +21,14 @@ let ch = 800;
 let cellSize = 16;
 let c_columns = cw / cellSize;
 let c_rows = ch / cellSize;
+// ------------------------------------------------------
+// states
 let gameStarted = false;
 let pause = false;
+let startTime = null;
+let endTime = null;
+let currentFPS = 0;
+let loopCounter = 0;
 // ------------------------------------------------------
 // global objects
 let snake;
@@ -48,13 +54,15 @@ function init() {
 // GAME LOOP
 // ----------------------------------------//
 function mainLoop() {
+  snake.checkDir();
   snake.move();
   snake.checkBorders();
   snake.checkEating();
   snake.checkSelfCollision();
-  updateHUD();
   clearCanvas();
   drawObjects();
+  updateFPS();
+  updateHUD();
 
   if (!pause) requestAnimationFrame(mainLoop);
 }
@@ -62,16 +70,16 @@ function mainLoop() {
 function keyPressed(evt) {
   switch (evt.key) {
     case "ArrowUp":
-      snake.changeDir(0, -1);
+      snake.addChangeDirInQueue(0, -1);
       break;
     case "ArrowDown":
-      snake.changeDir(0, 1);
+      snake.addChangeDirInQueue(0, 1);
       break;
     case "ArrowLeft":
-      snake.changeDir(-1, 0);
+      snake.addChangeDirInQueue(-1, 0);
       break;
     case "ArrowRight":
-      snake.changeDir(1, 0);
+      snake.addChangeDirInQueue(1, 0);
       break;
     case "g":
     case "п":
@@ -90,6 +98,7 @@ function mousePressed(evt) {}
 function startGameLoop(evt) {
   if ([37, 38, 39, 40].includes(evt.keyCode)) {
     removeEventListener("keydown", startGameLoop);
+    endTime = new Date();
     gameStarted = true;
     mainLoop();
   }
@@ -131,6 +140,8 @@ function initHUD() {
   HUD_elems.xpos = hud.getElementsByClassName("xpos-num")[0];
   HUD_elems.ypos = hud.getElementsByClassName("ypos-num")[0];
   HUD_elems.collisions = hud.getElementsByClassName("collisions-num")[0];
+  HUD_elems.fps = hud.getElementsByClassName("fps-num")[0];
+  HUD_elems.lostPoints = hud.getElementsByClassName("lost-points-num")[0];
   // init values
   updateHUD();
 }
@@ -141,4 +152,15 @@ function updateHUD() {
   HUD_elems.xpos.textContent = snake.headPos.x;
   HUD_elems.ypos.textContent = snake.headPos.y;
   HUD_elems.collisions.textContent = snake.collisionsCount;
+  HUD_elems.fps.textContent = currentFPS;
+  HUD_elems.lostPoints.textContent = snake.lostScore;
+}
+
+function updateFPS() {
+  startTime = endTime;
+  endTime = new Date();
+
+  if (++loopCounter % 5 == 0) {
+    currentFPS = Math.round(1000 / (endTime.getTime() - startTime.getTime()));
+  }
 }

@@ -5,27 +5,34 @@ class Snake {
       y: Math.floor(c_rows / 2) * cellSize,
     };
     this.direction = { x: 1, y: 0 };
-    this.speed = { x: 16, y: 16 };
+    this.speed = { x: 8, y: 8 };
     this.size = 16;
     this.length = 1;
+    this.lengthMultiplier = this.size / this.speed.x;
     this.tail = [];
     this.eatenTail = [];
 
     this.ctick = 0; // current tick
-    this.ticksToUpdate = 3;
+    this.ticksToUpdate = 2;
     this.changeDirCooldown = false;
+    this.changeDirQueue = [];
     this.shiftEatenTiming = 20;
     this.collisionsCount = 0;
 
     this.color = "#83ff0f";
     this.score = 0;
+    this.lostScore = 0;
   }
 
   move() {
     if (++this.ctick == this.ticksToUpdate) {
-      this.tail.push({ x: this.headPos.x, y: this.headPos.y });
+      this.tail.push({
+        x: this.headPos.x,
+        y: this.headPos.y,
+      });
 
-      let lenDiff = this.tail.length - (this.length - 1);
+      let lenDiff =
+        this.tail.length - (this.length - 1) * this.lengthMultiplier;
       if (lenDiff > 0) {
         this.tail.shift();
       }
@@ -54,6 +61,21 @@ class Snake {
     ctxObj.fillRect(this.headPos.x, this.headPos.y, this.size, this.size);
     for (let i = 0; i < this.tail.length; i++) {
       ctxObj.fillRect(this.tail[i].x, this.tail[i].y, this.size, this.size);
+    }
+  }
+
+  checkDir() {
+    if (this.headPos.x % 16 == 0 && this.headPos.y % 16 == 0) {
+      if (this.changeDirQueue.length != 0) {
+        let dir = this.changeDirQueue.shift();
+        this.changeDir(dir[0], dir[1]);
+      }
+    }
+  }
+
+  addChangeDirInQueue(x, y) {
+    if (this.changeDirQueue.length < 2) {
+      this.changeDirQueue.push([x, y]);
     }
   }
 
@@ -101,8 +123,18 @@ class Snake {
         this.headPos.x == this.tail[i].x &&
         this.headPos.y == this.tail[i].y
       ) {
-        this.eatenTail = this.tail.splice(0, i + 1);
-        this.length -= i + 1;
+        let lostLen = i + 1;
+        let realLostLen = Math.ceil(lostLen / this.lengthMultiplier);
+        let ratio = realLostLen / this.length;
+        if (ratio > 0.25) ratio = 0.25;
+        let penalty = Math.round(this.score * ratio);
+
+        this.eatenTail = this.tail.splice(0, lostLen);
+        this.length -= realLostLen;
+        this.tail.shift();
+
+        this.score -= penalty;
+        this.lostScore += penalty;
         this.collisionsCount += 1;
 
         setTimeout(this.shiftEaten.bind(this), this.shiftEatenTiming);

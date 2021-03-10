@@ -22,10 +22,10 @@ class Apples {
       4: {
         name: "gold",
         grow: 10,
-        score: 100,
+        score: 250,
         color: "gold",
         dropChance: 0.04,
-        duration: 3,
+        duration: 5,
       },
     };
     this.list = [];
@@ -78,7 +78,7 @@ class Apples {
     // center point
     let cx = getRandomInt(0, c_columns) * cellSize;
     let cy = getRandomInt(0, c_rows) * cellSize;
-    let coords = this.getCoodsOfArea(cx, cy, 2);
+    let coords = this.getCoodsOfArea(cx, cy, 1);
 
     if (this.isAreaFree(coords)) {
       coords = coords.map((item) => ({
